@@ -24,47 +24,47 @@ axios.defaults.headers.post['Content-Type'] = "application/json;charset=UTF-8";
 Vue.config.productionTip = false;
 
 // http request 拦截器
-axios.interceptors.request.use(
-  config => {
-    // config.withCredentials = true;
-    if(window.localStorage.getItem("token")!=null ) {
-      // 判断是否有token，若存在，每个http header加上token
-      config.headers.Authorization = 'Bearer'+window.localStorage.getItem("token");
-    }
-    else if(router.currentRoute.path === '/login' || router.currentRoute.path === '/register'){
+// axios.interceptors.request.use(
+//   config => {
+//     // config.withCredentials = true;
+//     if(window.localStorage.getItem("token")!=null ) {
+//       // 判断是否有token，若存在，每个http header加上token
+//       config.headers.Authorization = 'Bearer'+window.localStorage.getItem("token");
+//     }
+//     else if(router.currentRoute.path === '/login' || router.currentRoute.path === '/register'){
 
-    }
-    else{
-      window.location.pathname = '/login'
-    }
-    return config
-  },
-  error => {
-    return Promise.reject(error)
-  }
-);
+//     }
+//     else{
+//       window.location.pathname = '/login'
+//     }
+//     return config
+//   },
+//   error => {
+//     return Promise.reject(error)
+//   }
+// );
 
 
 //http response 拦截器
-axios.interceptors.response.use(
-  response => {
-    return response
-  },
-  error => {
-    console.log(error.response);
-    if(error) {
-      // 清除token 如果不是register/login, 跳转至login
-      store.commit('logout');
-      router.currentRoute.path !== '/login' &&
-      router.currentRoute.path !== '/register' &&
-      router.replace({
-        path: '/login',
-        query: { redirect: router.currentRoute.path }
-      })
-    }
-    return Promise.reject(error.response.data)
-  }
-);
+// axios.interceptors.response.use(
+//   response => {
+//     return response
+//   },
+//   error => {
+//     console.log(error.response);
+//     if(error) {
+//       // 清除token 如果不是register/login, 跳转至login
+//       store.commit('logout');
+//       router.currentRoute.path !== '/login' &&
+//       router.currentRoute.path !== '/register' &&
+//       router.replace({
+//         path: '/login',
+//         query: { redirect: router.currentRoute.path }
+//       })
+//     }
+//     return Promise.reject(error.response.data)
+//   }
+// );
 
 /* eslint-disable no-new */
 new Vue({
