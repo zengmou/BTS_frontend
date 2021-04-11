@@ -5,7 +5,8 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     //token: localStorage.getItem('token') || null,
-    userDetails: localStorage.getItem('userDetails') || null
+    userDetails: localStorage.getItem('userDetails') || null,
+    loanId:localStorage.getItem('loanId')||null
   },
   mutations: {
     login(state, data){
@@ -20,7 +21,15 @@ export default new Vuex.Store({
       localStorage.removeItem('userDetails')
       state.userDetails = null
       //state.token = null
-    }
+    },
+    setLoanId(state,date){
+      localStorage.setItem('loanId',date);
+      state.loanId=date
+    },
+    clearLoanId(state,date){
+      localStorage.removeItem('loanId');
+      state.loanId=null
+    },
   },
   actions: {
   }

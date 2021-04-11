@@ -10,7 +10,7 @@
         <el-col :span="21">
           <el-row>
             <el-col :span="24">
-              <div>                
+              <div>
                 <p style="text-align: left;margin: 30px 50px;font-size: 1.5em;font-weight: bold">已购买的产品</p>
               </div>
               <div>
@@ -20,12 +20,15 @@
                 <template>
                   <el-table :data="tableDataRegular" stripe style="margin: 60px;width: 90%">
                     <el-table-column prop="fpdId" label="产品编号" fixed="left"></el-table-column>
-                    <el-table-column prop="buyTime" label="购买时间"></el-table-column>
+                    <el-table-column prop="buyTime" label="购买时间">
+                      <!--<template slot-scope="scope">-->
+                        <!--{{scope.row.buyTime | dateFmt('YYYY-MM-DD')}}-->
+                      <!--</template>-->
+                    </el-table-column>
                     <el-table-column prop="principal" label="本金"></el-table-column>
                     <el-table-column prop="hold" label="持仓"></el-table-column>
                     <el-table-column prop="profit" label="收益"></el-table-column>
                     <el-table-column prop="interestRate" label="日利率（%）"></el-table-column>
-                    <el-table-column prop="expirationTime" label="到期时间"></el-table-column>
                   </el-table>
                 </template>
               </div>
@@ -36,7 +39,11 @@
                 <template>
                   <el-table :data="tableDataFund" stripe style="margin:60px;width:90%">
                     <el-table-column prop="fpdId" label="产品编号" fixed="left"></el-table-column>
-                    <el-table-column prop="buyTime" label="购买时间"></el-table-column>
+                    <el-table-column prop="buyTime" label="购买时间">
+                      <!--<template slot-scope="scope">-->
+                        <!--{{scope.row.buyTime | dateFmt('YYYY-MM-DD')}}-->
+                      <!--</template>-->
+                    </el-table-column>
                     <el-table-column prop="principal" label="本金"></el-table-column>
                     <el-table-column prop="hold" label="持仓"></el-table-column>
                     <el-table-column prop="profit" label="收益"></el-table-column>
@@ -51,14 +58,18 @@
                 <template>
                   <el-table :data="tableDataStock" stripe style="margin:60px;width:90%">
                     <el-table-column prop="fpdId" label="产品编号" fixed="left"></el-table-column>
-                    <el-table-column prop="buyTime" label="购买时间"></el-table-column>
+                    <el-table-column prop="buyTime" label="购买时间">
+                      <!--<template slot-scope="scope">-->
+                        <!--{{scope.row.buyTime | dateFmt('YYYY-MM-DD')}}-->
+                      <!--</template>-->
+                    </el-table-column>
                     <el-table-column prop="principal" label="本金"></el-table-column>
                     <el-table-column prop="hold" label="持仓"></el-table-column>
                     <el-table-column prop="profit" label="收益"></el-table-column>
                     <el-table-column prop="interestRate" label="收益率（%）"></el-table-column>
                   </el-table>
                 </template>
-              </div>             
+              </div>
             </el-col>
           </el-row>
         </el-col>
@@ -82,36 +93,14 @@
         rateStock:'',
         rateFund:'',
         tableData: [],
-        tableDataStock:[
-            {
-                fpdId:'1'
-            },
-            {
-                fpdId:'2'
-            }
-        ],
-        tableDataRegular:[
-            {
-                fpdId:'1'
-            },
-            {
-                fpdId:'2'
-            }
-        ],
-        tableDataFund:[
-            {
-                fpdId:'1'
-            },
-            {
-                fpdId:'2'
-            }
-        ],
+        tableDataStock:[],
+        tableDataRegular:[],
+        tableDataFund:[],
       }
     },
     created(){
-      //window.localStorage.setItem('creditRate','一级');
-      //window.localStorage.setItem('meetingId',this.$route.query.id);
-      this.$axios.get('./bank/clientroduct/'+this.cid,{
+
+      this.$axios.get('./bank/clientProduct/'+this.cid,{
         // params:{
         //   cid:this.$route.query.id,
         // }
@@ -119,15 +108,15 @@
         this.tableData = res.data;
         var length = this.tableData.length;
         for(var i=0;i<length;i++){
-            if(this.tableData[i].type===0){
-                this.tableDataRegular.push(this.tableData[i]);
-            }
-            else if(this.tableData[i].type===1){
-                this.tableDataStock.push(this.tableData[i]);
-            }
-            else{
-                this.tableDataFund.push(this.tableData[i]);
-            }
+          if(this.tableData[i].type===0){
+            this.tableDataRegular.push(this.tableData[i]);
+          }
+          else if(this.tableData[i].type===1){
+            this.tableDataStock.push(this.tableData[i]);
+          }
+          else{
+            this.tableDataFund.push(this.tableData[i]);
+          }
         }
 
         var lengthRegular = this.tableDataRegular.length;
@@ -137,21 +126,21 @@
 
         var lengthStock = this.tableDataStock.length;
         for(var j=0;j<lengthStock;j++){
-            this.rateStock = this.tableDataStock[j].profit*100/this.tableDataStock[j].principal;
-            //保留两位小数
-            this.tableDataStock[j].interestRate = parseFloat(this.rateStock).toFixed(2);
+          this.rateStock = this.tableDataStock[j].profit*100/this.tableDataStock[j].principal;
+          //保留两位小数
+          this.tableDataStock[j].interestRate = parseFloat(this.rateStock).toFixed(2);
         }
 
         var lengthFund = this.tableDataFund.length;
         for(var k=0;k<lengthFund;k++){
-            this.rateFund = this.tableDataFund[k].profit*100/this.tableDataFund[k].principal;
-            this.tableDataFund[k].interestRate = parseFloat(this.rateFund).toFixed(2);
+          this.rateFund = this.tableDataFund[k].profit*100/this.tableDataFund[k].principal;
+          this.tableDataFund[k].interestRate = parseFloat(this.rateFund).toFixed(2);
         }
 
       })
     },
 
-    
+
   }
 </script>
 

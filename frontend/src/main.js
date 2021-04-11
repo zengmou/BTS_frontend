@@ -10,6 +10,8 @@ import ElementUI from 'element-ui'
 //import 'bootstrap/dist/js/bootstrap.min'
 import 'element-ui/lib/theme-chalk/index.css'
 
+import moment from 'moment'
+
 Vue.use(ElementUI);
 // Vue.use(qs);
 
@@ -17,7 +19,11 @@ Vue.use(ElementUI);
 let axios = require('axios');
 // Axios挂载到prototype，全局可以使用this.$axios访问
 Vue.prototype.$axios = axios;
-axios.defaults.baseURL = '/api';
+
+//axios.defaults.baseURL = '/api';
+axios.defaults.baseURL ="http://3.208.65.202:8080";
+
+
 axios.defaults.withCredentials = true;
 axios.defaults.headers.post['Content-Type'] = "application/json;charset=UTF-8";
 
@@ -65,6 +71,15 @@ Vue.config.productionTip = false;
 //     return Promise.reject(error.response.data)
 //   }
 // );
+
+
+
+//过滤器转换时间
+Vue.filter('dateFmt', (input, formatString = "YYYY-MM-DD") => {
+  return moment(input).format(formatString)
+});
+
+
 
 /* eslint-disable no-new */
 new Vue({

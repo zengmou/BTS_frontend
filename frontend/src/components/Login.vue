@@ -2,7 +2,7 @@
   <el-row>
     <el-col :span="8">
       <div>
-          <img src="../assets/background/blue.jpg" alt="blue" id="login_img">
+        <img src="../assets/background/blue.jpg" alt="blue" id="login_img">
       </div>
     </el-col>
     <el-col :span="16">
@@ -26,25 +26,25 @@
     name: 'Login',
     data () {
       //验证身份证格式
-      const dataValidIdentity = (rule, value, callback) => {
-        if(value === '') {
-          return callback(new Error('Can\'t be empty'))
-        }
-        else{
-          var reg = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/; 
-          if(!reg.test(value)){
-            return callback(new Error('身份证格式不正确'))
-          }
-        
-          return callback();
-        }
-      };
+      // const dataValidIdentity = (rule, value, callback) => {
+      //   if(value === '') {
+      //     return callback(new Error('Can\'t be empty'))
+      //   }
+      //   else{
+      //     var reg = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/;
+      //     if(!reg.test(value)){
+      //       return callback(new Error('身份证格式不正确'))
+      //     }
+
+      //     return callback();
+      //   }
+      // };
       return {
         loginForm: {
           identity: '',
         },
         rules: {
-          identity: [{required: true, message: '身份证号不能为空', trigger: 'blur'},{validator: dataValidIdentity, trigger: 'blur'}],
+          identity: [{required: true, message: '身份证号不能为空', trigger: 'blur'}/*,{validator: dataValidIdentity, trigger: 'blur'}*/],
         },
         loading: false
       }
@@ -62,32 +62,49 @@
     },
     methods: {
       login (formName) {
-        
-        this.$axios.get('./bank/account/'+this.loginForm.identity,{
-          //idn: this.loginForm.identity,
-        })
-        .then(resp => {
-          if (resp.status === 200 && resp.data.status!=' ' /*&& resp.data.hasOwnProperty("token")*/) {
-            localStorage.setItem('identity',this.loginForm.identity);
-            //window.localStorage.setItem('token', resp.data.token);
-            localStorage.setItem('id',resp.data.id);
-            localStorage.setItem('balance',resp.data.balance);
-            localStorage.setItem('creditRate',resp.data.creditRate);
-            localStorage.setItem('loanAmount',resp.data.loanAmount);
-            localStorage.setItem('name',resp.data.name);
-            localStorage.setItem('age',resp.data.age);
-            localStorage.setItem('nowDate',resp.data.nowDate.subString(0,10));
-            this.$router.replace('/menu?id='+localStorage.getItem('id'))
-          }
-          else{
-              //this.$message.error(resp.body.status);
-            this.$message.error('登录失败，请检查身份证号是否正确');
-          }
-        })
-        .catch(error => {
-          console.log(error);
-          this.$message.error('登录请求失败');
-        })
+
+        if(this.loginForm.identity!=''){
+          this.$axios.get('./bank/account/'+this.loginForm.identity)
+            .then(resp => {
+              if (resp.status === 200 && resp.data!=' ' /*&& resp.data.hasOwnProperty("token")*/) {
+                //转换日期格式
+                var date = new Date();
+                date = resp.data.nowDate;
+                if(resp.data.nowDate!=null){
+                  date = date.toString().substring(0,10);
+                }
+                else{
+                  date=null;
+                }
+
+                localStorage.setItem('identity',this.loginForm.identity);
+                //window.localStorage.setItem('token', resp.data.token);
+                localStorage.setItem('id',resp.data.id);
+                localStorage.setItem('balance',resp.data.balance);
+                localStorage.setItem('creditRate',resp.data.creditRate);
+                localStorage.setItem('loanAmount',resp.data.loanAmount);
+                localStorage.setItem('name',resp.data.name);
+                localStorage.setItem('age',resp.data.age);
+                localStorage.setItem('nowDate',date);
+                //localStorage.setItem('nowDate',resp.data.nowDate);
+                this.$router.replace('/menu?id='+localStorage.getItem('id'))
+                this.$message.success('登录成功');
+              }
+              else{
+                //this.$message.error(resp.body.status);
+                this.$message.error('登录失败，请检查身份证号是否正确');
+              }
+            })
+            .catch(error => {
+              console.log(error);
+              this.$message.error('登录请求失败');
+            })
+        }
+        else{
+          this.$message.error('身份证不能为空');
+        }
+
+
       }
     }
   }

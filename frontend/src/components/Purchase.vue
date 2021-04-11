@@ -10,7 +10,7 @@
         <el-col :span="21">
           <el-row>
             <el-col :span="24">
-              <div>                
+              <div>
                 <p style="text-align: left;margin: 30px 50px;font-size: 1.5em;font-weight: bold">账户信用等级: {{creditLevel}}</p>
               </div>
               <div>
@@ -24,9 +24,9 @@
                     <el-table-column prop="price" label="产品价格"></el-table-column>
                     <el-table-column prop="interestRate" label="日利率（%）"></el-table-column>
                     <el-table-column label="操作">
-                        <template slot-scope="scope">
-                            <el-button @click="pay(scope.$index)" type="text" size="small">购买</el-button>
-                        </template>
+                      <template slot-scope="scope">
+                        <el-button @click="pay(scope.row)" type="text" size="small">购买</el-button>
+                      </template>
                     </el-table-column>
                   </el-table>
                 </template>
@@ -37,16 +37,16 @@
               <div>
                 <template>
                   <el-table :data="tableDataFund" stripe style="margin:60px;width:90%">
-                      <el-table-column prop="id" label="产品编号" fixed="left"></el-table-column>
-                      <el-table-column prop="name" label="基金名称"></el-table-column>
-                      <el-table-column prop="price" label="基金份额"></el-table-column>
-                      <el-table-column prop="interestRate" label="今日涨跌（%）"></el-table-column>
-                      <el-table-column label="操作">
-                        <template slot-scope="scope">
-                            <el-button @click="pay(scope.$index)" type="text" size="small" v-if="creditLevel!='三级'">购买</el-button>
-                            <el-button type="text" size="small" v-if="creditLevel==='三级'" disabled>信用等级不足</el-button>
-                        </template>
-                      </el-table-column>
+                    <el-table-column prop="id" label="产品编号" fixed="left"></el-table-column>
+                    <el-table-column prop="name" label="基金名称"></el-table-column>
+                    <el-table-column prop="price" label="基金份额"></el-table-column>
+                    <el-table-column prop="interestRate" label="当前涨跌（%）"></el-table-column>
+                    <el-table-column label="操作">
+                      <template slot-scope="scope">
+                        <el-button @click="pay(scope.row)" type="text" size="small" v-if="creditLevel!='三级'">购买</el-button>
+                        <el-button type="text" size="small" v-if="creditLevel==='三级'" disabled>信用等级不足</el-button>
+                      </template>
+                    </el-table-column>
                   </el-table>
                 </template>
               </div>
@@ -56,19 +56,19 @@
               <div>
                 <template>
                   <el-table :data="tableDataStock" stripe style="margin:60px;width:90%">
-                      <el-table-column prop="id" label="产品编号" fixed="left"></el-table-column>
-                      <el-table-column prop="name" label="股票名称"></el-table-column>
-                      <el-table-column prop="price" label="每股单价"></el-table-column>
-                      <el-table-column prop="interestRate" label="今日涨跌（%）"></el-table-column>
-                      <el-table-column label="操作">
-                        <template slot-scope="scope">
-                            <el-button @click="pay(scope.$index)" type="text" size="small" v-if="creditLevel==='一级'">购买</el-button>
-                            <el-button type="text" size="small" v-if="creditLevel==='三级'||creditLevel==='二级'" disabled>信用等级不足</el-button>
-                        </template>
-                      </el-table-column>
+                    <el-table-column prop="id" label="产品编号" fixed="left"></el-table-column>
+                    <el-table-column prop="name" label="股票名称"></el-table-column>
+                    <el-table-column prop="price" label="每股单价"></el-table-column>
+                    <el-table-column prop="interestRate" label="当前涨跌（%）"></el-table-column>
+                    <el-table-column label="操作">
+                      <template slot-scope="scope">
+                        <el-button @click="pay(scope.row)" type="text" size="small" v-if="creditLevel==='一级'">购买</el-button>
+                        <el-button type="text" size="small" v-if="creditLevel==='三级'||creditLevel==='二级'" disabled>信用等级不足</el-button>
+                      </template>
+                    </el-table-column>
                   </el-table>
                 </template>
-              </div>             
+              </div>
             </el-col>
           </el-row>
         </el-col>
@@ -89,37 +89,32 @@
     data(){
       return{
         id:'',
-        creditLevel:window.localStorage.getItem('creditRate'),
+        creditRate:'',
+        creditLevel:'',
         tableData: [],
-        tableDataStock:[
-            {
-                id:'1'
-            },
-            {
-                id:'2'
-            }
-        ],
-        tableDataRegular:[
-            {
-                id:'1'
-            },
-            {
-                id:'2'
-            }
-        ],
-        tableDataFund:[
-            {
-                id:'1'
-            },
-            {
-                id:'2'
-            }
-        ],
+        tableDataStock:[],
+        tableDataRegular:[],
+        tableDataFund:[],
       }
     },
     created(){
-      //window.localStorage.setItem('creditRate','一级');
-      //window.localStorage.setItem('meetingId',this.$route.query.id);
+      this.$axios.get('./bank/account/'+localStorage.getItem('identity'),{
+        //idn: this.loginForm.identity,
+      })
+        .then(res =>{
+          this.creditRate = res.data.creditRate;
+          if(this.creditRate===1){
+            this.creditLevel = '一级';
+          }
+          else if(this.creditRate===2){
+            this.creditLevel = '二级';
+          }
+          else{
+            this.creditLevel = '三级';
+          }
+        })
+
+
       this.$axios.get('./bank/finance-product',{
         // params:{
         //   cid:this.$route.query.id,
@@ -128,15 +123,15 @@
         this.tableData = res.data;
         var length = this.tableData.length;
         for(var i=0;i<length;i++){
-            if(this.tableData[i].type===0){
-                this.tableDataRegular.push(this.tableData[i]);
-            }
-            else if(this.tableData[i].type===1){
-                this.tableDataStock.push(this.tableData[i]);
-            }
-            else{
-                this.tableDataFund.push(this.tableData[i]);
-            }
+          if(this.tableData[i].type===0){
+            this.tableDataRegular.push(this.tableData[i]);
+          }
+          else if(this.tableData[i].type===1){
+            this.tableDataStock.push(this.tableData[i]);
+          }
+          else{
+            this.tableDataFund.push(this.tableData[i]);
+          }
         }
 
         var lengthRegular = this.tableDataRegular.length;
@@ -157,31 +152,33 @@
     },
     methods:{
       pay(row){
-          this.$prompt('请输入购买金额', '提示', {
+        this.$prompt('请输入购买金额', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           inputPattern: /^[+]{0,1}(\d+)$|^[+]{0,1}(\d+\.\d+)$/,
           inputErrorMessage: '请输入正确的购买金额'
-          }).then(({ value }) => {
-            this.$axios.post('./bank/finance-product/buyProduct',{
-              clientId:this.$route.query.id,
-              fpdId:this.tableDataFund[row].id,
-              principal:value,
-            }).then(res =>{
-                if(res.status===200){
-                    this.$message.success('购买成功！');
-                }
-                else{
-                    this.$message.error('余额不足');
-                }
-            });
-          }).catch(() => {
-            this.$message({
-              type: 'info',
-              message: '取消购买'
-            });       
+        }).then(({ value }) => {
+          this.$axios.post('./bank/finance-product/buyProduct',{
+            clientId:window.localStorage.getItem('id'),
+            fpdId:row.id,
+            principal:value,
+          }).then(res =>{
+            if(res.status===200){
+              this.$message.success('购买成功！');
+            }
+            else{
+              this.$message.error('余额不足');
+            }
+          }).catch(error =>{
+            this.$message.error('余额不足')
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '取消购买'
           });
-          
+        });
+
       },
     }
   }

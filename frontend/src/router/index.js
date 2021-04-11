@@ -4,6 +4,9 @@ import Login from '@/components/Login'
 import Purchase from '@/components/Purchase'
 import Products from '@/components/Products'
 import Menu from '@/components/Menu'
+import ManualRepay from '@/components/ManualRepay'
+import TransactionList from '@/components/TransactionList'
+
 
 Vue.use(Router);
 
@@ -35,6 +38,22 @@ export const router = new Router({
       path: '/menu',
       name: 'Menu',
       component: Menu,
+      meta:{
+        requireAuth:true
+      }
+    },
+    {
+      path: '/manualRepay',
+      name: 'ManualRepay',
+      component: ManualRepay,
+      meta:{
+        requireAuth:true
+      }
+    },
+    {
+      path: '/transactionList',
+      name: 'TransactionList',
+      component: TransactionList,
       meta:{
         requireAuth:true
       }
